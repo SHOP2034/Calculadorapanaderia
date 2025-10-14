@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Panadería de Fede</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Calculadora de Panadería de Fede 🥐</h1>
+  </header>
+
+  <section id="selector-producto">
+    <h2>Elegí el tipo de producto</h2>
+    <div class="opciones">
+      <div class="opcion" data-tipo="hojaldre" onclick="seleccionarProducto(this)">
+        <img src="imagenes/hojaldre.png" alt="Criollos de hojaldre">
+        <p>Criollos de hojaldre</p>
+      </div>
+
+      <div class="opcion" data-tipo="chicharron" onclick="seleccionarProducto(this)">
+        <img src="imagenes/chicharrón.png" alt="Criollos con chicharrón">
+        <p>Criollos con chicharrón</p>
+      </div>
+
+      <div class="opcion" data-tipo="cremonas" onclick="seleccionarProducto(this)">
+        <img src="imagenes/cremonas.png" alt="Cremonas">
+        <p>Cremonas</p>
+      </div>
+
+      <div class="opcion" data-tipo="prepizza" onclick="seleccionarProducto(this)">
+        <img src="imagenes/prepizza.png" alt="Pre pizza">
+        <p>Pre pizza</p>
+      </div>
+
+      <div class="opcion" data-tipo="pan" onclick="seleccionarProducto(this)">
+        <img src="imagenes/pan.png" alt="Pan">
+        <p>Pan</p>
+      </div>
+
+      <div class="opcion" data-tipo="facturas" onclick="seleccionarProducto(this)">
+        <img src="imagenes/facturas.png" alt="Facturas">
+        <p>Facturas</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="input-section">
+    <label for="kg">¿Cuántos kilos querés hacer?</label>
+    <input type="number" id="kg" min="0.1" step="0.1" placeholder="Ej: 5">
+    <button onclick="calcular()">Calcular</button>
+  </section>
+
+  <section id="resultado" class="oculto">
+    <img id="imagen-producto" src="" alt="Imagen del producto">
+    <div class="carta">
+      <h2 id="nombre-producto"></h2>
+      <ul id="lista-ingredientes"></ul>
+      <p id="total"></p>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
