@@ -5,99 +5,1384 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <title>Calculadora de Panadería de Fede 🥐</title>
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZ0lEQVQ4T2NkoBAgQhT///8z/z8gAwiJgS8C/A30/gP/z//k/wMB8P9z/y/0f4T/Z/y/f/33/7eYgYEFGII7rQ2GgYhB0wRjD4Y5cAwM4P8f+g/0f4T+x/D/v3r/P8EGBhYgZ4gQAGyD+gQABQBYBfC5l2O50AAAAAElFTkSuQmCC">
+  <style>
+    :root{
+      /* 🎨 PALETA “PANADERÍA MODERNA” */
+      --bg: #fffdf9;            /* Fondo tipo harina */
+      --accent: #e7b169;        /* Dorado miel */
+      --accent-dark: #d8953d;   /* Miel tostada */
+      --text: #3f2a20;          /* Cacao oscuro */
+      --card-bg: #ffffff;
+      --muted: #8d6f58;         /* Café con leche */
+      --soft: #fff5e7;          /* Crema suave */
+      --unit-bg: #fff1db;       /* Fondo de etiqueta */
+      --unit-border: #f6d9a8;
+      --shadow: 0 4px 10px rgba(0,0,0,0.06);
+      --radius: 12px;
+    }
+
+    /* === Reset y Tipografía === */
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; padding:0}
+    body{
+      font-family:'Poppins',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.35;
+      font-size:15px;
+      overflow-x: hidden;
+    }
+
+    /* === HEADER === */
+    header{
+      background: linear-gradient(135deg,var(--accent),var(--accent-dark));
+      padding:10px 12px;
+      border-bottom:1px solid rgba(0,0,0,0.05);
+      box-shadow: var(--shadow);
+      text-align:center;
+      border-radius:0 0 var(--radius) var(--radius);
+      position: relative;
+    }
+    header h1{
+      margin:0;
+      font-size:1.2rem;
+      color:#fff;
+      font-weight:700;
+      text-shadow:0 1px 2px rgba(0,0,0,0.1);
+      letter-spacing:0.5px;
+    }
+
+    /* === NAVEGACIÓN === */
+    .navegacion {
+      display: flex;
+      justify-content: center;
+      margin: 12px 0;
+      gap: 8px;
+    }
+    .navegacion button {
+      background: var(--soft);
+      border: 1px solid var(--unit-border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .navegacion button.activo {
+      background: var(--accent-dark);
+      color: white;
+    }
+    .navegacion button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* === MAIN === */
+    main {
+      padding: 14px 10px 60px;
+      position: relative;
+      min-height: calc(100vh - 120px);
+    }
+
+    /* === SECCIONES === */
+    .seccion {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .seccion.activa {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === SELECTOR DE PRODUCTO === */
+    #selector-producto{
+      max-width:740px;
+      margin:0 auto 14px;
+    }
+    #selector-producto h2{
+      margin:4px 0 10px;
+      font-size:1rem;
+      text-align:center;
+      font-weight:600;
+      color:var(--text);
+    }
+
+    /* Grid más densa y táctil */
+    .opciones{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      max-width:400px;
+      margin:0 auto;
+    }
+    @media(min-width:480px){
+      .opciones{max-width:500px;grid-template-columns:repeat(4,1fr)}
+    }
+    @media(min-width:820px){
+      .opciones{max-width:720px;grid-template-columns:repeat(6,1fr)}
+    }
+
+    /* === TARJETA OPCIÓN === */
+    .opcion{
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      padding:8px 6px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      border:2px solid transparent;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      transition: all .15s ease;
+      min-height:80px;
+    }
+    .opcion img{
+      width:50px;
+      height:50px;
+      border-radius:10px;
+      object-fit:cover;
+    }
+    .opcion p{
+      margin:0;
+      font-size:.8rem;
+      font-weight:600;
+      text-align:center;
+    }
+    .opcion:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,0.08)}
+    .opcion.seleccionada{
+      border-color:var(--accent-dark);
+      background:var(--soft);
+      transform:scale(1.02);
+      box-shadow:0 6px 14px rgba(0,0,0,0.1);
+    }
+
+    /* === INPUT SECTION === */
+    #input-section{
+      max-width:480px;
+      margin:16px auto;
+      background:var(--card-bg);
+      padding:14px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    #label-cantidad{
+      display:block;
+      font-weight:700;
+      margin-bottom:6px;
+      font-size:0.95rem;
+    }
+    #input-section input[type="number"]{
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid #e2d6c7;
+      width:100%;
+      max-width:160px;
+      text-align:center;
+      font-size:0.95rem;
+      font-weight:600;
+      transition:border-color .2s;
+    }
+    #input-section input[type="number"]:focus{
+      border-color:var(--accent-dark);
+      outline:none;
+    }
+
+    /* === Levadura === */
+    .lev-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:12px;
+    }
+    .lev-left label{font-size:.85rem}
+    .lev-left .hint{font-size:.72rem;color:var(--muted)}
+    .lev-right input{max-width:65px;padding:6px;border-radius:8px;border:1px solid #e5d6c6}
+    .unidad-small{font-size:.8rem;color:var(--muted)}
+
+    /* === Slider === */
+    .slider-row{margin-top:8px}
+    #levaduraRange{width:100%;margin-top:4px}
+    .range-values{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:.8rem;
+      margin-top:2px;
+    }
+    .range-values strong{
+      color:var(--accent-dark);
+      font-weight:700;
+      font-size:1rem;
+    }
+
+    /* === Tip === */
+    .lev-tip{
+      margin-top:8px;
+      font-size:.75rem;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    /* === Botón acción === */
+    .actions{margin-top:16px;text-align:center}
+    button{
+      background: linear-gradient(135deg,var(--accent-dark),var(--accent));
+      color:white;
+      border:none;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:700;
+      font-size:0.95rem;
+      cursor:pointer;
+      box-shadow:0 5px 14px rgba(216,149,61,0.25);
+      width:100%;
+      max-width:240px;
+      transition:transform .15s,box-shadow .15s;
+    }
+    button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 18px rgba(216,149,61,0.35);
+    }
+
+    /* === RESULTADO === */
+    #resultado{
+      max-width:760px;
+      margin:18px auto;
+      animation:fadeInUp .3s ease-out both;
+    }
+    .resultado-inner{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+      padding:0 8px;
+    }
+    #imagen-producto{
+      width:100%;
+      max-width:300px;
+      border-radius:14px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.1);
+      object-fit:cover;
+      height:auto;
+      transition:transform .25s ease;
+    }
+    #imagen-producto:hover{transform:scale(1.02)}
+
+    /* === Carta de resultados === */
+    .carta{
+      width:100%;
+      background:var(--card-bg);
+      border-radius:14px;
+      padding:14px;
+      box-shadow:var(--shadow);
+      max-width:420px;
+    }
+    .carta h2{
+      margin:0 0 10px;
+      font-size:1.1rem;
+      color:var(--text);
+      text-align:center;
+    }
+    .carta ul{list-style:none;padding:0;margin:0}
+    .carta li{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:8px 0;
+      border-bottom:1px solid var(--soft);
+    }
+    .carta li:last-child{border-bottom:none}
+    .carta li strong{font-weight:600;font-size:.95rem}
+    .carta li .unit{
+      background:var(--unit-bg);
+      padding:5px 8px;
+      border-radius:999px;
+      font-size:.8rem;
+      border:1px solid var(--unit-border);
+      font-weight:700;
+      min-width:70px;
+      text-align:center;
+    }
+    #total{
+      margin-top:10px;
+      text-align:center;
+      font-weight:600;
+      color:var(--muted);
+      font-size:0.9rem;
+    }
+
+    /* === PEDIDO DEL DÍA === */
+    .pedido-item {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pedido-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+    }
+    .pedido-item.expandido {
+      background: var(--soft);
+      border: 2px solid var(--unit-border);
+    }
+    .pedido-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pedido-info {
+      flex-grow: 1;
+    }
+    .pedido-nombre {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .pedido-cantidad {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .pedido-eliminar {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .pedido-eliminar:hover {
+      background: var(--soft);
+      color: var(--accent-dark);
+    }
+    .pedido-detalles {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--unit-border);
+      display: none;
+    }
+    .pedido-item.expandido .pedido-detalles {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .pedido-total {
+      margin-top: 20px;
+      background: var(--soft);
+      border-radius: var(--radius);
+      padding: 15px;
+      box-shadow: var(--shadow);
+    }
+    .pedido-vacio {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 0;
+    }
+
+    /* === HISTORIAL === */
+    .historial-item {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+    .historial-fecha {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: var(--accent-dark);
+    }
+    .historial-productos {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    .historial-totales {
+      background: var(--soft);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.85rem;
+    }
+    .historial-vacio {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 0;
+    }
+    .historial-acciones {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .historial-acciones button {
+      max-width: 48%;
+    }
+
+    /* === MODAL === */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-contenido {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      max-width: 90%;
+      width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .modal-cerrar {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .modal-cerrar:hover {
+      color: var(--accent-dark);
+    }
+
+    /* === Helpers === */
+    .oculto{display:none !important}
+
+    /* === Animación === */
+    @keyframes fadeInUp{
+      from{opacity:0;transform:translateY(6px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>Calculadora de Recetas</h1>
   </header>
 
+  <div class="navegacion">
+    <button class="navegacion-btn activo" data-seccion="calculadora">Calculadora</button>
+    <button class="navegacion-btn" data-seccion="pedido">Pedido del Día</button>
+    <button class="navegacion-btn" data-seccion="historial">Historial</button>
+  </div>
+
   <main>
-    <section id="selector-producto" aria-label="Seleccionar producto">
-      <h2>Elegí el tipo de producto</h2>
+    <!-- SECCIÓN CALCULADORA -->
+    <section id="calculadora" class="seccion activa">
+      <section id="selector-producto" aria-label="Seleccionar producto">
+        <h2>Elegí el tipo de producto</h2>
 
-      <div class="opciones" role="list">
-        <div class="opcion" data-tipo="hojaldre" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Criollos de hojaldre">
-          <img src="imagenes/hojaldre.png" alt="Criollos de hojaldre" />
-          <p>Criollos</p>
+        <div class="opciones" role="list">
+          <div class="opcion" data-tipo="hojaldre" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Criollos de hojaldre">
+            <img src="imagenes/hojaldre.png" alt="Criollos de hojaldre" />
+            <p>Criollos</p>
+          </div>
+
+          <div class="opcion" data-tipo="chicharron" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Criollos con chicharrón">
+            <img src="imagenes/chicharrón.png" alt="Criollos con chicharrón" />
+            <p>Chicharrón</p>
+          </div>
+
+          <div class="opcion" data-tipo="cremonas" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Cremonas (hojaldre)">
+            <img src="imagenes/cremonas.png" alt="Cremonas" />
+            <p>Cremonas</p>
+          </div>
+
+          <div class="opcion" data-tipo="prepizza" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Pre pizza">
+            <img src="imagenes/prepizza.png" alt="Pre pizza" />
+            <p>Pre pizza</p>
+          </div>
+
+          <div class="opcion" data-tipo="pan" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Pan">
+            <img src="imagenes/pan.png" alt="Pan" />
+            <p>Pan</p>
+          </div>
+
+          <div class="opcion" data-tipo="facturas" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Facturas">
+            <img src="imagenes/facturas.png" alt="Facturas" />
+            <p>Facturas</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="input-section" aria-label="Entradas">
+        <label for="kg" id="label-cantidad">¿Cuántos kilos querés hacer?</label>
+        <input type="number" id="kg" min="0.1" step="0.1" placeholder="Ej: 5" inputmode="decimal" />
+
+        <div id="levadura-section" aria-hidden="false">
+          <div class="lev-row">
+            <div class="lev-left">
+              <label for="levadura">Levadura por kg de Harina</label>
+              <small class="hint">Ajustá según clima o tiempo de fermento.</small>
+            </div>
+
+            <div class="lev-right">
+              <input type="number" id="levadura" min="0" max="50" step="0.1" placeholder="Ej: 2.8" inputmode="decimal" />
+              <span class="unidad-small">g / kg</span>
+            </div>
+          </div>
+
+          <div class="slider-row">
+            <input id="levaduraRange" type="range" min="0" max="50" step="0.1" />
+            <div class="range-values">
+              <small>0g</small>
+              <strong id="lev-range-val">2.8</strong>
+              <small>50g</small>
+            </div>
+          </div>
+
+          <div class="lev-tip" title="Consejo: aumentar levadura en climas fríos o reducir si fermentás mucho tiempo">
+            💡 El valor es en gramos por **kg de harina**.
+          </div>
         </div>
 
-        <div class="opcion" data-tipo="chicharron" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Criollos con chicharrón">
-          <img src="imagenes/chicharrón.png" alt="Criollos con chicharrón" />
-          <p>Chicharrón</p>
+        <div class="actions">
+          <button onclick="calcular()" type="button">Calcular Ingredientes</button>
+          <button onclick="agregarAlPedido()" type="button" style="margin-top: 10px; background: var(--soft); color: var(--text);">Agregar al Pedido</button>
         </div>
+      </section>
 
-        <div class="opcion" data-tipo="cremonas" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Cremonas (hojaldre)">
-          <img src="imagenes/cremonas.png" alt="Cremonas" />
-          <p>Cremonas</p>
+      <section id="resultado" class="oculto" aria-live="polite">
+        <div class="resultado-inner">
+          <img id="imagen-producto" src="" alt="Imagen del producto" />
+          <div class="carta">
+            <h2 id="nombre-producto"></h2>
+            <ul id="lista-ingredientes"></ul>
+            <p id="total"></p>
+          </div>
         </div>
+      </section>
+    </section>
 
-        <div class="opcion" data-tipo="prepizza" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Pre pizza">
-          <img src="imagenes/prepizza.png" alt="Pre pizza" />
-          <p>Pre pizza</p>
+    <!-- SECCIÓN PEDIDO DEL DÍA -->
+    <section id="pedido" class="seccion">
+      <div style="max-width: 480px; margin: 0 auto;">
+        <h2 style="text-align: center; margin-bottom: 20px;">Pedido del Día</h2>
+        
+        <div id="lista-pedido">
+          <!-- Los elementos del pedido se agregarán aquí dinámicamente -->
         </div>
-
-        <div class="opcion" data-tipo="pan" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Pan">
-          <img src="imagenes/pan.png" alt="Pan" />
-          <p>Pan</p>
+        
+        <div id="pedido-vacio" class="pedido-vacio">
+          <p>Tu pedido está vacío</p>
+          <p style="font-size: 0.9rem;">Agregá productos desde la calculadora</p>
         </div>
-
-        <div class="opcion" data-tipo="facturas" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Facturas">
-          <img src="imagenes/facturas.png" alt="Facturas" />
-          <p>Facturas</p>
+        
+        <div id="pedido-total" class="pedido-total oculto">
+          <h3 style="margin-top: 0;">Ingredientes Totales</h3>
+          <ul id="lista-total-pedido"></ul>
+          <div class="actions" style="margin-top: 15px;">
+            <button onclick="guardarPedido()">Guardar Pedido</button>
+            <button onclick="reiniciarPedido()" style="margin-top: 10px; background: var(--soft); color: var(--text);">Reiniciar Pedido</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="input-section" aria-label="Entradas">
-      <label for="kg" id="label-cantidad">¿Cuántos kilos querés hacer?</label>
-      <input type="number" id="kg" min="0.1" step="0.1" placeholder="Ej: 5" inputmode="decimal" />
-
-      <div id="levadura-section" aria-hidden="false">
-        <div class="lev-row">
-          <div class="lev-left">
-            <label for="levadura">Levadura por kg de Harina</label>
-            <small class="hint">Ajustá según clima o tiempo de fermento.</small>
-          </div>
-
-          <div class="lev-right">
-            <input type="number" id="levadura" min="0" max="50" step="0.1" placeholder="Ej: 2.8" inputmode="decimal" />
-            <span class="unidad-small">g / kg</span>
-          </div>
+    <!-- SECCIÓN HISTORIAL -->
+    <section id="historial" class="seccion">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h2 style="text-align: center; margin-bottom: 20px;">Historial de Pedidos</h2>
+        
+        <div id="lista-historial">
+          <!-- Los pedidos guardados se mostrarán aquí -->
         </div>
-
-        <div class="slider-row">
-          <input id="levaduraRange" type="range" min="0" max="50" step="0.1" />
-          <div class="range-values">
-            <small>0g</small>
-            <strong id="lev-range-val">2.8</strong>
-            <small>50g</small>
-          </div>
+        
+        <div id="historial-vacio" class="historial-vacio">
+          <p>No hay pedidos guardados</p>
         </div>
-
-        <div class="lev-tip" title="Consejo: aumentar levadura en climas fríos o reducir si fermentás mucho tiempo">
-          💡 El valor es en gramos por **kg de harina**.
-        </div>
-      </div>
-
-      <div class="actions">
-        <button onclick="calcular()" type="button">Calcular Ingredientes</button>
-      </div>
-    </section>
-
-    <section id="resultado" class="oculto" aria-live="polite">
-      <div class="resultado-inner">
-        <img id="imagen-producto" src="" alt="Imagen del producto" />
-        <div class="carta">
-          <h2 id="nombre-producto"></h2>
-          <ul id="lista-ingredientes"></ul>
-          <p id="total"></p>
+        
+        <div class="historial-acciones" id="acciones-historial" style="display: none;">
+          <button onclick="limpiarHistorial()" style="background: #f2dede; color: #a94442;">Limpiar Historial</button>
+          <button onclick="exportarHistorial()">Exportar Historial</button>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <!-- MODAL PARA DETALLES DEL PEDIDO -->
+  <div id="modal-historial" class="modal">
+    <div class="modal-contenido">
+      <button class="modal-cerrar" onclick="cerrarModal()">&times;</button>
+      <h2 id="modal-titulo" style="margin-top: 0;">Detalles del Pedido</h2>
+      <div id="modal-contenido">
+        <!-- El contenido del modal se cargará aquí -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /** script.js actualizado - con nuevas funciones de pedido e historial **/
+
+    let productoSeleccionado = null;
+    let pedidoActual = [];
+    let productoExpandido = null; // Para controlar qué producto está expandido
+    const HISTORIAL_KEY = 'historialPanaderia';
+    const PEDIDO_KEY = 'pedidoActual';
+
+    // Referencias a elementos del DOM
+    const levInput = () => document.getElementById('levadura');
+    const levRange = () => document.getElementById('levaduraRange');
+    const levRangeVal = () => document.getElementById('lev-range-val');
+    const cantidadInput = () => document.getElementById('kg');
+    const labelCantidad = () => document.getElementById('label-cantidad');
+    const resultadoSection = () => document.getElementById('resultado');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inicializar valores por defecto del slider
+      const inicial = 2.8;
+      levInput().value = inicial;
+      levRange().value = inicial;
+      levRangeVal().textContent = Number(inicial).toFixed(1);
+
+      // Sincronizar ambos controles de levadura
+      const syncLevadura = (value) => {
+        let v = parseFloat(value);
+        if (isNaN(v)) v = 0;
+        
+        // Asegurar que el valor no exceda el max/min del slider
+        const min = parseFloat(levRange().min);
+        const max = parseFloat(levRange().max);
+        v = Math.min(Math.max(v, min), max);
+
+        const vFixed = v.toFixed(1);
+        levInput().value = vFixed;
+        levRange().value = v;
+        levRangeVal().textContent = vFixed;
+      };
+
+      levRange().addEventListener('input', (e) => syncLevadura(e.target.value));
+      levInput().addEventListener('input', (e) => syncLevadura(e.target.value));
+
+      // Permitir selección por teclado en tarjetas
+      document.querySelectorAll('.opcion').forEach(op => {
+        op.addEventListener('keyup', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') seleccionarProducto(op);
+        });
+      });
+
+      // Ocultar resultado al inicio
+      resultadoSection().classList.add('oculto');
+
+      // Cargar pedido actual desde localStorage
+      cargarPedidoActual();
+      
+      // Cargar historial
+      cargarHistorial();
+
+      // Configurar navegación entre secciones
+      document.querySelectorAll('.navegacion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const seccion = btn.getAttribute('data-seccion');
+          cambiarSeccion(seccion);
+        });
+      });
+    });
+
+    function cambiarSeccion(seccion) {
+      // Actualizar botones de navegación
+      document.querySelectorAll('.navegacion-btn').forEach(btn => {
+        btn.classList.remove('activo');
+      });
+      document.querySelector(`[data-seccion="${seccion}"]`).classList.add('activo');
+
+      // Mostrar sección correspondiente
+      document.querySelectorAll('.seccion').forEach(sec => {
+        sec.classList.remove('activa');
+      });
+      document.getElementById(seccion).classList.add('activa');
+
+      // Actualizar contenido si es necesario
+      if (seccion === 'pedido') {
+        actualizarVistaPedido();
+      } else if (seccion === 'historial') {
+        cargarHistorial();
+      }
+    }
+
+    function seleccionarProducto(el) {
+      document.querySelectorAll('.opcion').forEach(op => op.classList.remove('seleccionada'));
+      el.classList.add('seleccionada');
+      productoSeleccionado = el.getAttribute('data-tipo');
+
+      const recetas = obtenerRecetas();
+      const receta = recetas[productoSeleccionado];
+
+      // Actualizar label y placeholder de cantidad
+      if (receta.tipo === "unidad") {
+        labelCantidad().textContent = "¿Cuántas unidades querés hacer?";
+        // placeholder ejemplo muestra la baseRinde
+        const baseExample = receta.baseRinde ? receta.baseRinde : 1;
+        cantidadInput().placeholder = `Ej: ${baseExample}`;
+      } else {
+        labelCantidad().textContent = "¿Cuántos kilos querés hacer?";
+        cantidadInput().placeholder = "Ej: 5";
+      }
+      
+      // Ocultar el resultado al cambiar de producto
+      resultadoSection().classList.add('oculto');
+
+      // Mostrar levadura recomendada si existe; si no, mantener el valor actual.
+      // La Levadura en la receta se interpreta como 'gramos por kg de harina'.
+      const defaultLev = receta.ingredientes && receta.ingredientes.Levadura !== undefined 
+            ? receta.ingredientes.Levadura 
+            : null;
+
+      if (defaultLev !== null) {
+        // Usar syncLevadura para actualizar ambos controles
+        const v = Number(defaultLev).toFixed(1);
+        levInput().value = v;
+        levRange().value = v;
+        levRangeVal().textContent = v;
+      }
+    }
+
+    function calcular() {
+      const valor = parseFloat(cantidadInput().value);
+      const valorLevadura = parseFloat(levInput().value);
+      const resultado = resultadoSection();
+      const lista = document.getElementById('lista-ingredientes');
+      const nombre = document.getElementById('nombre-producto');
+      const imagen = document.getElementById('imagen-producto');
+      const total = document.getElementById('total');
+
+      // Validaciones
+      if (!productoSeleccionado) {
+        alert('⚠️ Por favor, primero elegí el tipo de producto.');
+        return;
+      }
+      if (!valor || valor <= 0 || isNaN(valor)) {
+        alert('❌ Ingresá una cantidad válida mayor a cero.');
+        return;
+      }
+
+      const recetas = obtenerRecetas();
+      const receta = recetas[productoSeleccionado];
+
+      // Actualizar nombre e imagen
+      nombre.textContent = receta.nombre;
+      if (receta.imagen) imagen.src = receta.imagen;
+
+      let html = "";
+      
+      // Calcular la escala de la receta
+      const esKg = receta.tipo === 'kg';
+      const scale = esKg ? (valor / 1) : (valor / receta.baseRinde); // Base: 1kg (para kg) o baseRinde (para unidad)
+
+      // Obtener la harina base para calcular la levadura total en el modo "unidad"
+      const harinaBaseG = receta.ingredientes.Harina ? receta.ingredientes.Harina : 0;
+      
+      // Calcular la harina total en kg (solo para el cálculo de Levadura en modo 'unidad')
+      const harinaTotalG = harinaBaseG * scale; 
+      const harinaTotalKg = harinaTotalG / 1000;
+
+      // Iterar ingredientes y calcular cantidades
+      for (const [ingrediente, cantidadBase] of Object.entries(receta.ingredientes)) {
+        let cantidad = 0;
+        
+        // Cálculo de Levadura: usa el valor del input * kg de harina
+        if (ingrediente === "Levadura" && !isNaN(valorLevadura)) {
+          if (esKg) {
+            // En modo Kg: Levadura por kg de harina * (Harina de receta en kg * escala)
+            // Simplificado: Levadura por kg * kilos solicitados (asumiendo que los 'kilos solicitados' son los que se desean producir)
+            // **Mejorado:** Usaremos Harina Total en Kg * Levadura por kg (para ser más preciso si la receta base no es 1kg de producto final)
+            const harinaRecetaKg = harinaBaseG / 1000; // Harina en la base de la receta (generalmente 0.7kg o 1kg)
+            const harinaTotalCalculadaKg = harinaRecetaKg * scale; // La harina total que se va a usar para los 'kilos' de producto
+            cantidad = valorLevadura * harinaTotalCalculadaKg;
+          } else {
+            // En modo Unidad: Levadura por kg de harina * harina total en kg
+            cantidad = valorLevadura * harinaTotalKg;
+          }
+        } else {
+          // Cálculo normal: multiplicar base por la escala (factor de multiplicación)
+          cantidad = cantidadBase * scale;
+        }
+
+        // Determinar unidad y formato
+        let unidad = "g";
+        if (ingrediente === "Agua" || ingrediente === "Aceite") unidad = "ml";
+        if (ingrediente === "Huevos") unidad = "u";
+        // El resto se queda en gramos, incluyendo Margarina, Manteca, Grasa, Sal, Azúcar.
+        
+        // Para ingredientes no numéricos o error, mostramos 0.
+        const cantidadDisplay = Number.isFinite(cantidad) ? Number(cantidad).toFixed(1) : "0.0";
+        
+        html += `<li><strong>${ingrediente}</strong><span class="unit">${cantidadDisplay} ${unidad}</span></li>`;
+      }
+
+      lista.innerHTML = html;
+
+      // Mensaje final adaptado
+      if (receta.infoExtra && esKg) {
+        total.innerHTML = receta.infoExtra.replace("{kg}", valor.toFixed(1));
+      } else if (esKg) {
+        total.textContent = `✅ Esto te rinde aproximadamente ${valor.toFixed(1)} kg de ${receta.nombre.toLowerCase()}.`;
+      } else {
+        total.textContent = `🍞 Con esta cantidad hacés ${valor} ${receta.nombre.toLowerCase()}s. (Base de rendimiento: ${receta.baseRinde} unidades).`;
+      }
+              // Mostrar resultado y scroll
+      resultado.classList.remove('oculto');
+      setTimeout(() => {
+        resultado.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+
+    function agregarAlPedido() {
+      const valor = parseFloat(cantidadInput().value);
+      const valorLevadura = parseFloat(levInput().value);
+
+      // Validaciones
+      if (!productoSeleccionado) {
+        alert('⚠️ Por favor, primero elegí el tipo de producto.');
+        return;
+      }
+      if (!valor || valor <= 0 || isNaN(valor)) {
+        alert('❌ Ingresá una cantidad válida mayor a cero.');
+        return;
+      }
+
+      const recetas = obtenerRecetas();
+      const receta = recetas[productoSeleccionado];
+      
+      // Crear objeto de pedido
+      const itemPedido = {
+        tipo: productoSeleccionado,
+        nombre: receta.nombre,
+        cantidad: valor,
+        levadura: valorLevadura,
+        tipoCantidad: receta.tipo,
+        fecha: new Date().toISOString()
+      };
+      
+      // Agregar al pedido actual
+      pedidoActual.push(itemPedido);
+      
+      // Guardar en localStorage
+      guardarPedidoActual();
+      
+      // Mostrar mensaje de confirmación
+      alert(`✅ ${receta.nombre} agregado al pedido del día`);
+      
+      // Cambiar a la sección de pedido
+      cambiarSeccion('pedido');
+    }
+
+    function actualizarVistaPedido() {
+      const listaPedido = document.getElementById('lista-pedido');
+      const pedidoVacio = document.getElementById('pedido-vacio');
+      const pedidoTotal = document.getElementById('pedido-total');
+      
+      // Limpiar lista
+      listaPedido.innerHTML = '';
+      
+      if (pedidoActual.length === 0) {
+        pedidoVacio.classList.remove('oculto');
+        pedidoTotal.classList.add('oculto');
+        return;
+      }
+      
+      pedidoVacio.classList.add('oculto');
+      pedidoTotal.classList.remove('oculto');
+      
+      // Mostrar cada item del pedido
+      pedidoActual.forEach((item, index) => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'pedido-item';
+        if (index === productoExpandido) {
+          itemElement.classList.add('expandido');
+        }
+        
+        // Calcular ingredientes para este producto
+        const ingredientesHTML = calcularIngredientesParaProducto(item);
+        
+        itemElement.innerHTML = `
+          <div class="pedido-header" onclick="toggleExpandirProducto(${index})">
+            <div class="pedido-info">
+              <div class="pedido-nombre">${item.nombre}</div>
+              <div class="pedido-cantidad">${item.cantidad} ${item.tipoCantidad === 'kg' ? 'kg' : 'unidades'}</div>
+            </div>
+            <button class="pedido-eliminar" onclick="event.stopPropagation(); eliminarDelPedido(${index})">&times;</button>
+          </div>
+          <div class="pedido-detalles">
+            ${ingredientesHTML}
+          </div>
+        `;
+        listaPedido.appendChild(itemElement);
+      });
+      
+      // Calcular y mostrar totales
+      calcularTotalesPedido();
+    }
+
+    function calcularIngredientesParaProducto(item) {
+      const recetas = obtenerRecetas();
+      const receta = recetas[item.tipo];
+      
+      // Calcular la escala de la receta
+      const esKg = receta.tipo === 'kg';
+      const scale = esKg ? (item.cantidad / 1) : (item.cantidad / receta.baseRinde);
+
+      // Obtener la harina base para calcular la levadura total
+      const harinaBaseG = receta.ingredientes.Harina ? receta.ingredientes.Harina : 0;
+      const harinaTotalG = harinaBaseG * scale; 
+      const harinaTotalKg = harinaTotalG / 1000;
+
+      let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+      
+      // Iterar ingredientes y calcular cantidades
+      for (const [ingrediente, cantidadBase] of Object.entries(receta.ingredientes)) {
+        let cantidad = 0;
+        
+        // Cálculo de Levadura: usa el valor del input * kg de harina
+        if (ingrediente === "Levadura" && !isNaN(item.levadura)) {
+          if (esKg) {
+            const harinaRecetaKg = harinaBaseG / 1000;
+            const harinaTotalCalculadaKg = harinaRecetaKg * scale;
+            cantidad = item.levadura * harinaTotalCalculadaKg;
+          } else {
+            cantidad = item.levadura * harinaTotalKg;
+          }
+        } else {
+          // Cálculo normal: multiplicar base por la escala (factor de multiplicación)
+          cantidad = cantidadBase * scale;
+        }
+
+        // Determinar unidad y formato
+        let unidad = "g";
+        if (ingrediente === "Agua" || ingrediente === "Aceite") unidad = "ml";
+        if (ingrediente === "Huevos") unidad = "u";
+        
+        // Para ingredientes no numéricos o error, mostramos 0.
+        const cantidadDisplay = Number.isFinite(cantidad) ? Number(cantidad).toFixed(1) : "0.0";
+        
+        html += `
+          <li style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--unit-border);">
+            <strong>${ingrediente}</strong>
+            <span style="background: var(--unit-bg); padding: 3px 8px; border-radius: 999px; font-size: 0.8rem; border: 1px solid var(--unit-border); font-weight: 700; min-width: 70px; text-align: center;">${cantidadDisplay} ${unidad}</span>
+          </li>
+        `;
+      }
+      
+      html += '</ul>';
+      
+      // Mensaje final adaptado
+      let mensajeFinal = '';
+      if (receta.infoExtra && esKg) {
+        mensajeFinal = receta.infoExtra.replace("{kg}", item.cantidad.toFixed(1));
+      } else if (esKg) {
+        mensajeFinal = `✅ Esto te rinde aproximadamente ${item.cantidad.toFixed(1)} kg de ${receta.nombre.toLowerCase()}.`;
+      } else {
+        mensajeFinal = `🍞 Con esta cantidad hacés ${item.cantidad} ${receta.nombre.toLowerCase()}s. (Base de rendimiento: ${receta.baseRinde} unidades).`;
+      }
+      html += `<p style="margin-top: 10px; text-align: center; font-weight: 600; color: var(--muted); font-size: 0.9rem;">${mensajeFinal}</p>`;
+      
+      return html;
+    }
+
+    function toggleExpandirProducto(index) {
+      // Si ya está expandido, lo contraemos
+      if (productoExpandido === index) {
+        productoExpandido = null;
+      } else {
+        // Expandimos el nuevo producto
+        productoExpandido = index;
+      }
+      
+      // Actualizamos la vista
+      actualizarVistaPedido();
+    }
+
+    function eliminarDelPedido(index) {
+      if (confirm('¿Eliminar este producto del pedido?')) {
+        pedidoActual.splice(index, 1);
+        // Si eliminamos el producto expandido, lo reseteamos
+        if (productoExpandido === index) {
+          productoExpandido = null;
+        }
+        guardarPedidoActual();
+        actualizarVistaPedido();
+      }
+    }
+
+    function calcularTotalesPedido() {
+      const listaTotal = document.getElementById('lista-total-pedido');
+      const totales = {};
+      
+      // Calcular ingredientes totales
+      pedidoActual.forEach(item => {
+        const recetas = obtenerRecetas();
+        const receta = recetas[item.tipo];
+        const esKg = receta.tipo === 'kg';
+        const scale = esKg ? (item.cantidad / 1) : (item.cantidad / receta.baseRinde);
+        
+        // Obtener la harina base para calcular la levadura total
+        const harinaBaseG = receta.ingredientes.Harina ? receta.ingredientes.Harina : 0;
+        const harinaTotalG = harinaBaseG * scale; 
+        const harinaTotalKg = harinaTotalG / 1000;
+        
+        // Sumar cada ingrediente
+        for (const [ingrediente, cantidadBase] of Object.entries(receta.ingredientes)) {
+          let cantidad = 0;
+          
+          if (ingrediente === "Levadura") {
+            if (esKg) {
+              const harinaRecetaKg = harinaBaseG / 1000;
+              const harinaTotalCalculadaKg = harinaRecetaKg * scale;
+              cantidad = item.levadura * harinaTotalCalculadaKg;
+            } else {
+              cantidad = item.levadura * harinaTotalKg;
+            }
+          } else {
+            cantidad = cantidadBase * scale;
+          }
+          
+          if (!totales[ingrediente]) {
+            totales[ingrediente] = 0;
+          }
+          totales[ingrediente] += cantidad;
+        }
+      });
+      
+      // Mostrar totales
+      let html = '';
+      for (const [ingrediente, cantidad] of Object.entries(totales)) {
+        let unidad = "g";
+        if (ingrediente === "Agua" || ingrediente === "Aceite") unidad = "ml";
+        if (ingrediente === "Huevos") unidad = "u";
+        
+        const cantidadDisplay = Number.isFinite(cantidad) ? Number(cantidad).toFixed(1) : "0.0";
+        html += `<li><strong>${ingrediente}</strong><span class="unit">${cantidadDisplay} ${unidad}</span></li>`;
+      }
+      
+      listaTotal.innerHTML = html;
+    }
+
+    function guardarPedido() {
+      if (pedidoActual.length === 0) {
+        alert('El pedido está vacío');
+        return;
+      }
+      
+      // Obtener historial actual
+      const historial = obtenerHistorial();
+      
+      // Crear objeto de pedido guardado
+      const pedidoGuardado = {
+        fecha: new Date().toISOString(),
+        productos: [...pedidoActual],
+        totales: calcularTotalesParaGuardar()
+      };
+      
+      // Agregar al historial
+      historial.push(pedidoGuardado);
+      
+      // Limitar historial a 30 días
+      const historialFiltrado = filtrarHistorial30Dias(historial);
+      
+      // Guardar en localStorage
+      localStorage.setItem(HISTORIAL_KEY, JSON.stringify(historialFiltrado));
+      
+      // Reiniciar pedido actual
+      reiniciarPedido();
+      
+      alert('✅ Pedido guardado en el historial');
+      
+      // Cambiar a la sección de historial
+      cambiarSeccion('historial');
+    }
+
+    function calcularTotalesParaGuardar() {
+      const totales = {};
+      
+      // Calcular ingredientes totales (similar a calcularTotalesPedido pero devuelve objeto)
+      pedidoActual.forEach(item => {
+        const recetas = obtenerRecetas();
+        const receta = recetas[item.tipo];
+        const esKg = receta.tipo === 'kg';
+        const scale = esKg ? (item.cantidad / 1) : (item.cantidad / receta.baseRinde);
+        
+        // Obtener la harina base para calcular la levadura total
+        const harinaBaseG = receta.ingredientes.Harina ? receta.ingredientes.Harina : 0;
+        const harinaTotalG = harinaBaseG * scale; 
+        const harinaTotalKg = harinaTotalG / 1000;
+        
+        // Sumar cada ingrediente
+        for (const [ingrediente, cantidadBase] of Object.entries(receta.ingredientes)) {
+          let cantidad = 0;
+          
+          if (ingrediente === "Levadura") {
+            if (esKg) {
+              const harinaRecetaKg = harinaBaseG / 1000;
+              const harinaTotalCalculadaKg = harinaRecetaKg * scale;
+              cantidad = item.levadura * harinaTotalCalculadaKg;
+            } else {
+              cantidad = item.levadura * harinaTotalKg;
+            }
+          } else {
+            cantidad = cantidadBase * scale;
+          }
+          
+          if (!totales[ingrediente]) {
+            totales[ingrediente] = 0;
+          }
+          totales[ingrediente] += cantidad;
+        }
+      });
+      return totales;
+    }
+
+    function reiniciarPedido() {
+      if (pedidoActual.length === 0 || confirm('¿Estás seguro de que querés reiniciar el pedido?')) {
+        pedidoActual = [];
+        productoExpandido = null;
+        guardarPedidoActual();
+        actualizarVistaPedido();
+      }
+    }
+
+    function cargarPedidoActual() {
+      const pedidoGuardado = localStorage.getItem(PEDIDO_KEY);
+      if (pedidoGuardado) {
+        pedidoActual = JSON.parse(pedidoGuardado);
+      }
+    }
+
+    function guardarPedidoActual() {
+      localStorage.setItem(PEDIDO_KEY, JSON.stringify(pedidoActual));
+    }
+
+    function obtenerHistorial() {
+      const historialGuardado = localStorage.getItem(HISTORIAL_KEY);
+      return historialGuardado ? JSON.parse(historialGuardado) : [];
+    }
+
+    function filtrarHistorial30Dias(historial) {
+      const hace30Dias = new Date();
+      hace30Dias.setDate(hace30Dias.getDate() - 30);
+      
+      return historial.filter(pedido => {
+        const fechaPedido = new Date(pedido.fecha);
+        return fechaPedido >= hace30Dias;
+      });
+    }
+
+    function cargarHistorial() {
+      const historial = obtenerHistorial();
+      const listaHistorial = document.getElementById('lista-historial');
+      const historialVacio = document.getElementById('historial-vacio');
+      const accionesHistorial = document.getElementById('acciones-historial');
+      
+      // Limpiar lista
+      listaHistorial.innerHTML = '';
+      
+      if (historial.length === 0) {
+        historialVacio.classList.remove('oculto');
+        accionesHistorial.style.display = 'none';
+        return;
+      }
+      
+      historialVacio.classList.add('oculto');
+      accionesHistorial.style.display = 'flex';
+      
+      // Ordenar por fecha (más reciente primero)
+      historial.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      
+      // Mostrar cada pedido en el historial
+      historial.forEach((pedido, index) => {
+        const fecha = new Date(pedido.fecha);
+        const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+        
+        const horaFormateada = fecha.toLocaleTimeString('es-AR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        const pedidoElement = document.createElement('div');
+        pedidoElement.className = 'historial-item';
+        pedidoElement.innerHTML = `
+          <div class="historial-fecha">${fechaFormateada} - ${horaFormateada}</div>
+          <div class="historial-productos">
+            ${pedido.productos.map(p => 
+              `<div>• ${p.nombre} (${p.cantidad} ${p.tipoCantidad === 'kg' ? 'kg' : 'unidades'})</div>`
+            ).join('')}
+          </div>
+          <button onclick="verDetallesPedido(${index})" style="margin-top: 10px; background: var(--soft); color: var(--text); padding: 6px 12px; font-size: 0.85rem;">Ver Detalles</button>
+        `;
+        listaHistorial.appendChild(pedidoElement);
+      });
+    }
+
+    function verDetallesPedido(index) {
+      const historial = obtenerHistorial();
+      const pedido = historial[index];
+      
+      const fecha = new Date(pedido.fecha);
+      const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const horaFormateada = fecha.toLocaleTimeString('es-AR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      let contenido = `
+        <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+        <p><strong>Hora:</strong> ${horaFormateada}</p>
+        
+        <h3 style="margin-top: 20px;">Productos:</h3>
+        <ul>
+      `;
+      
+      pedido.productos.forEach(p => {
+        contenido += `<li>${p.nombre} - ${p.cantidad} ${p.tipoCantidad === 'kg' ? 'kg' : 'unidades'}</li>`;
+      });
+      
+      contenido += `</ul>
+        <h3 style="margin-top: 20px;">Ingredientes Totales:</h3>
+        <div class="historial-totales">
+          <ul style="list-style: none; padding: 0; margin: 0;">
+      `;
+      
+      for (const [ingrediente, cantidad] of Object.entries(pedido.totales)) {
+        let unidad = "g";
+        if (ingrediente === "Agua" || ingrediente === "Aceite") unidad = "ml";
+        if (ingrediente === "Huevos") unidad = "u";
+        
+        const cantidadDisplay = Number.isFinite(cantidad) ? Number(cantidad).toFixed(1) : "0.0";
+        contenido += `<li style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--unit-border);">
+          <strong>${ingrediente}</strong>
+          <span>${cantidadDisplay} ${unidad}</span>
+        </li>`;
+      }
+      
+      contenido += `</ul></div>`;
+      
+      document.getElementById('modal-titulo').textContent = 'Detalles del Pedido';
+      document.getElementById('modal-contenido').innerHTML = contenido;
+      document.getElementById('modal-historial').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-historial').style.display = 'none';
+    }
+
+    function limpiarHistorial() {
+      if (confirm('¿Estás seguro de que querés limpiar todo el historial? Esta acción no se puede deshacer.')) {
+        localStorage.removeItem(HISTORIAL_KEY);
+        cargarHistorial();
+      }
+    }
+
+    function exportarHistorial() {
+      const historial = obtenerHistorial();
+      
+      if (historial.length === 0) {
+        alert('No hay historial para exportar');
+        return;
+      }
+      
+      // Crear contenido CSV
+      let csvContent = "Fecha,Hora,Producto,Cantidad,Unidad\n";
+      
+      historial.forEach(pedido => {
+        const fecha = new Date(pedido.fecha);
+        const fechaFormateada = fecha.toLocaleDateString('es-AR');
+        const horaFormateada = fecha.toLocaleTimeString('es-AR');
+        
+        pedido.productos.forEach(producto => {
+          csvContent += `"${fechaFormateada}","${horaFormateada}","${producto.nombre}",${producto.cantidad},"${producto.tipoCantidad === 'kg' ? 'kg' : 'unidades'}"\n`;
+        });
+      });
+      
+      // Crear y descargar archivo
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `historial_panaderia_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Mantener las recetas originales
+    function obtenerRecetas() {
+      return {
+        hojaldre: {
+          nombre: "Criollos de hojaldre",
+          imagen: "imagenes/hojaldre.png",
+          ingredientes: { Harina: 700, Sal: 21, Grasa: 140, Agua: 343, Levadura: 2.8, Margarina: 184.2 },
+          tipo: "kg"
+        },
+        chicharron: {
+          nombre: "Criollos con chicharrón",
+          imagen: "imagenes/chicharrón.png",
+          ingredientes: { Harina: 700, Sal: 21, Grasa: 140, Agua: 343, Levadura: 2.8, "Chicharrón": 73.6 },
+          tipo: "kg"
+        },
+        cremonas: {
+          nombre: "Cremonas",
+          imagen: "imagenes/cremonas.png",
+          ingredientes: { Harina: 700, Sal: 21, Grasa: 140, Agua: 343, Levadura: 2.8, Margarina: 184.2 },
+          tipo: "kg",
+          infoExtra: "🥐 Esto te rinde aproximadamente {kg} kg de cremonas de hojaldre."
+        },
+        prepizza: {
+          nombre: "Pre pizza",
+          imagen: "imagenes/prepizza.png",
+          ingredientes: { Harina: 1000, Sal: 25, Aceite: 50, Agua: 540, Levadura: 10 },
+          tipo: "unidad",
+          baseRinde: 4
+        },
+        pan: {
+          nombre: "Pan",
+          imagen: "imagenes/pan.png",
+          ingredientes: { Harina: 3700, Sal: 92.5, Levadura: 29.6, Agua: 1813, Grasa: 740 },
+          tipo: "unidad",
+          baseRinde: 10
+        },
+        facturas: {
+          nombre: "Facturas",
+          imagen: "imagenes/facturas.png",
+          ingredientes: { Harina: 1000, Huevos: 2, Manteca: 370, Azúcar: 200, Agua: 300, Sal: 10, Levadura: 10 },
+          tipo: "kg",
+          infoExtra: "🥐 Rinde aproximadamente 1,8 kg de masa (unas 66 facturas de 27 g cada una)."
+        }
+      };
+    }
+  </script>
 </body>
 </html>
