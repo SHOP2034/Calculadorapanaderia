@@ -1,65 +1,102 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Panadería de Fede</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>Calculadora de Panadería de Fede 🥐</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZ0lEQVQ4T2NkoBAgQhT///8z/z8gAwiJgS8C/A30/gP/z//k/wMB8P9z/y/0f4T/Z/y/f/33/7eYgYEFGII7rQ2GgYhB0wRjD4Y5cAwM4P8f+g/0f4T+x/D/v3r/P8EGBhYgZ4gQAGyD+gQABQBYBfC5l2O50AAAAAElFTkSuQmCC">
 </head>
 <body>
   <header>
-    <h1>Calculadora de Panadería de Fede 🥐</h1>
+    <h1>Calculadora de Recetas</h1>
   </header>
 
-  <section id="selector-producto">
-    <h2>Elegí el tipo de producto</h2>
-    <div class="opciones">
-      <div class="opcion" data-tipo="hojaldre" onclick="seleccionarProducto(this)">
-        <img src="imagenes/hojaldre.png" alt="Criollos de hojaldre">
-        <p>Criollos de hojaldre</p>
+  <main>
+    <section id="selector-producto" aria-label="Seleccionar producto">
+      <h2>Elegí el tipo de producto</h2>
+
+      <div class="opciones" role="list">
+        <div class="opcion" data-tipo="hojaldre" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Criollos de hojaldre">
+          <img src="imagenes/hojaldre.png" alt="Criollos de hojaldre" />
+          <p>Criollos</p>
+        </div>
+
+        <div class="opcion" data-tipo="chicharron" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Criollos con chicharrón">
+          <img src="imagenes/chicharrón.png" alt="Criollos con chicharrón" />
+          <p>Chicharrón</p>
+        </div>
+
+        <div class="opcion" data-tipo="cremonas" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Cremonas (hojaldre)">
+          <img src="imagenes/cremonas.png" alt="Cremonas" />
+          <p>Cremonas</p>
+        </div>
+
+        <div class="opcion" data-tipo="prepizza" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Pre pizza">
+          <img src="imagenes/prepizza.png" alt="Pre pizza" />
+          <p>Pre pizza</p>
+        </div>
+
+        <div class="opcion" data-tipo="pan" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Pan">
+          <img src="imagenes/pan.png" alt="Pan" />
+          <p>Pan</p>
+        </div>
+
+        <div class="opcion" data-tipo="facturas" onclick="seleccionarProducto(this)" role="listitem" tabindex="0" title="Facturas">
+          <img src="imagenes/facturas.png" alt="Facturas" />
+          <p>Facturas</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="input-section" aria-label="Entradas">
+      <label for="kg" id="label-cantidad">¿Cuántos kilos querés hacer?</label>
+      <input type="number" id="kg" min="0.1" step="0.1" placeholder="Ej: 5" inputmode="decimal" />
+
+      <div id="levadura-section" aria-hidden="false">
+        <div class="lev-row">
+          <div class="lev-left">
+            <label for="levadura">Levadura por kg de Harina</label>
+            <small class="hint">Ajustá según clima o tiempo de fermento.</small>
+          </div>
+
+          <div class="lev-right">
+            <input type="number" id="levadura" min="0" max="50" step="0.1" placeholder="Ej: 2.8" inputmode="decimal" />
+            <span class="unidad-small">g / kg</span>
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <input id="levaduraRange" type="range" min="0" max="50" step="0.1" />
+          <div class="range-values">
+            <small>0g</small>
+            <strong id="lev-range-val">2.8</strong>
+            <small>50g</small>
+          </div>
+        </div>
+
+        <div class="lev-tip" title="Consejo: aumentar levadura en climas fríos o reducir si fermentás mucho tiempo">
+          💡 El valor es en gramos por **kg de harina**.
+        </div>
       </div>
 
-      <div class="opcion" data-tipo="chicharron" onclick="seleccionarProducto(this)">
-        <img src="imagenes/chicharrón.png" alt="Criollos con chicharrón">
-        <p>Criollos con chicharrón</p>
+      <div class="actions">
+        <button onclick="calcular()" type="button">Calcular Ingredientes</button>
       </div>
+    </section>
 
-      <div class="opcion" data-tipo="cremonas" onclick="seleccionarProducto(this)">
-        <img src="imagenes/cremonas.png" alt="Cremonas">
-        <p>Cremonas</p>
+    <section id="resultado" class="oculto" aria-live="polite">
+      <div class="resultado-inner">
+        <img id="imagen-producto" src="" alt="Imagen del producto" />
+        <div class="carta">
+          <h2 id="nombre-producto"></h2>
+          <ul id="lista-ingredientes"></ul>
+          <p id="total"></p>
+        </div>
       </div>
-
-      <div class="opcion" data-tipo="prepizza" onclick="seleccionarProducto(this)">
-        <img src="imagenes/prepizza.png" alt="Pre pizza">
-        <p>Pre pizza</p>
-      </div>
-
-      <div class="opcion" data-tipo="pan" onclick="seleccionarProducto(this)">
-        <img src="imagenes/pan.png" alt="Pan">
-        <p>Pan</p>
-      </div>
-
-      <div class="opcion" data-tipo="facturas" onclick="seleccionarProducto(this)">
-        <img src="imagenes/facturas.png" alt="Facturas">
-        <p>Facturas</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="input-section">
-    <label for="kg">¿Cuántos kilos querés hacer?</label>
-    <input type="number" id="kg" min="0.1" step="0.1" placeholder="Ej: 5">
-    <button onclick="calcular()">Calcular</button>
-  </section>
-
-  <section id="resultado" class="oculto">
-    <img id="imagen-producto" src="" alt="Imagen del producto">
-    <div class="carta">
-      <h2 id="nombre-producto"></h2>
-      <ul id="lista-ingredientes"></ul>
-      <p id="total"></p>
-    </div>
-  </section>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
